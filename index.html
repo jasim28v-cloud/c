@@ -3,76 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SHΔDØW EMPIRE | V4 FIXED</title>
+    <title>SHΔDØW EMPIRE | ULTIMATE NODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap');
-        :root { --neon: #00f3ff; }
-        body { background: #000; color: #fff; overflow: hidden; font-family: 'Rajdhani', sans-serif; margin: 0; }
-        .app-container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --glass: rgba(0, 0, 0, 0.85);
+        }
+
+        body, html { 
+            margin: 0; padding: 0; background: #000; color: #fff; 
+            overflow: hidden; font-family: 'Rajdhani', sans-serif;
+            height: 100%; width: 100%;
+        }
+
+        /* حاوية العرض بملء الشاشة */
+        .app-container { 
+            height: 100vh; width: 100vw;
+            overflow-y: scroll; scroll-snap-type: y mandatory; 
+            scrollbar-width: none; scroll-behavior: smooth;
+        }
         .app-container::-webkit-scrollbar { display: none; }
-        .video-card { height: 100vh; width: 100vw; scroll-snap-align: start; position: relative; overflow: hidden; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) contrast(1.1); }
-        .hud-ui { position: absolute; inset: 20px; border: 1px solid rgba(0, 243, 255, 0.1); pointer-events: none; z-index: 10; border-radius: 15px; }
-        .big-title { font-family: 'Orbitron'; font-weight: 900; font-size: 12vw; line-height: 0.8; text-transform: uppercase; background: linear-gradient(to bottom, #fff, var(--neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
+
+        .video-card { 
+            height: 100vh; width: 100vw; scroll-snap-align: start; 
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* محرك الخلفية الفيديوية */
+        .video-wrapper { position: absolute; inset: 0; z-index: 1; }
+        video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) contrast(1.15); transition: 1.2s; }
+        .video-card:hover video { transform: scale(1.03); filter: brightness(0.8); }
+
+        /* تأثيرات الإضاءة السينمائية */
+        .overlay-cinematic {
+            position: absolute; inset: 0; z-index: 2;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 35%, transparent 65%, rgba(0,0,0,0.9) 100%);
+            pointer-events: none;
+        }
+
+        /* واجهة HUD Frame */
+        .hud-frame {
+            position: absolute; inset: 25px; border: 1px solid rgba(0, 243, 255, 0.1);
+            pointer-events: none; z-index: 10; border-radius: 20px;
+        }
+        .corner { position: absolute; width: 35px; height: 35px; border: 3px solid var(--neon-blue); filter: drop-shadow(0 0 12px var(--neon-blue)); }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-radius: 12px 0 0 0; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-radius: 0 0 12px 0; }
+
+        /* الأزرار الجانبية الفخمة */
+        .side-dock {
+            position: absolute; right: 25px; bottom: 130px; z-index: 100;
+            display: flex; flex-direction: column; gap: 22px;
+        }
+        .dock-btn {
+            width: 60px; height: 60px; background: var(--glass);
+            backdrop-filter: blur(20px); border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 50%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .dock-btn:hover { 
+            transform: scale(1.15); border-color: var(--neon-blue);
+            box-shadow: 0 0 25px var(--neon-blue);
+        }
+        .dock-btn i { font-size: 1.4rem; color: #fff; }
+        .dock-btn span { font-size: 8px; margin-top: 4px; color: var(--neon-blue); font-weight: 900; letter-spacing: 1px; }
+
+        /* تفاصيل العرض الضخمة */
+        .video-content {
+            position: absolute; bottom: 70px; left: 45px; z-index: 100;
+            max-width: 85%; pointer-events: none;
+        }
+        .node-tag {
+            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); padding: 6px 16px; font-size: 11px;
+            letter-spacing: 4px; font-family: 'Orbitron'; margin-bottom: 25px; display: inline-block;
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+        .main-title {
+            font-family: 'Orbitron'; font-weight: 900; font-size: clamp(3.2rem, 14vw, 7rem);
+            line-height: 0.82; text-transform: uppercase; letter-spacing: -5px;
+            background: linear-gradient(to right, #fff, var(--neon-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
+        }
+
+        /* شريط التقدم النيوني */
+        .progress-line { position: absolute; bottom: 0; left: 0; height: 4px; background: var(--neon-blue); width: 0%; z-index: 1000; box-shadow: 0 0 15px var(--neon-blue); transition: 0.1s; }
+
+        /* شاشة التحميل الاحترافية */
+        #loading-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loader-path { width: 300px; height: 1px; background: rgba(255,255,255,0.05); position: relative; margin-top: 25px; }
+        .loader-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--neon-blue); animation: scan 2.5s infinite; }
+
+        @keyframes scan { 0% { width: 0%; left: 0; } 50% { width: 100%; left: 0; } 100% { width: 0%; left: 100%; } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="text-cyan-400 font-black tracking-widest animate-pulse mb-4" style="font-family:'Orbitron'">ESTABLISHING_CONNECTION...</div>
-        <div class="w-48 h-[1px] bg-white/10 overflow-hidden"><div class="h-full bg-cyan-400 animate-[loading_2s_infinite]"></div></div>
+    <div id="loading-overlay">
+        <div class="text-cyan-400 font-black tracking-[20px] animate-pulse italic text-xs" style="font-family: 'Orbitron';">SHΔDØW_SYSTEM_ACTIVE</div>
+        <div class="loader-path"><div class="loader-fill"></div></div>
     </div>
 
-    <main class="app-container" id="main-engine"></main>
+    <header class="fixed top-0 w-full z-[1000] p-10 flex justify-between items-start pointer-events-none">
+        <div class="flex items-center gap-6">
+            <div class="w-[4px] h-16 bg-cyan-500 shadow-[0_0_25px_#00f3ff]"></div>
+            <div>
+                <h1 class="font-black text-4xl tracking-tighter" style="font-family: 'Orbitron';">EMPIRE<span class="text-cyan-400">.V4</span></h1>
+                <div id="digital-clock" class="text-xs text-cyan-400/60 tracking-[8px] font-bold mt-1">00:00:00 // SECURE</div>
+            </div>
+        </div>
+        <div class="flex flex-col items-end gap-3">
+            <div class="px-5 py-2 border border-cyan-500/20 rounded bg-black/60 text-[10px] text-cyan-400 uppercase tracking-widest font-black">Archive: Online</div>
+            <div class="text-[8px] text-white/20 tracking-tighter uppercase">Quantum Encryption Protocol Enabled</div>
+        </div>
+    </header>
+
+    <main class="app-container" id="empire-feed"></main>
 
     <script>
-        // البيانات المستخرجة من رابطك
-        const cloudName = "dssk5tabb"; 
-        const totalVideos = 5; // عدد فيديوهاتك الحالية
-        const engine = document.getElementById('main-engine');
+        // --- إعدادات المحرك المباشر ---
+        const cloudAccount = "dssk5tabb"; 
+        const videoCount = 27; // عدد فيديوهاتك (سيفتح المجال لـ 27 فيديو)
+        const engine = document.getElementById('empire-feed');
 
-        // بناء المحتوى يدوياً لضمان الفتح الفوري
-        for (let i = 1; i <= totalVideos; i++) {
-            const videoID = `homework${i}`; 
+        // بناء الإمبراطورية برمجياً
+        for (let i = 1; i <= videoCount; i++) {
+            const vID = `homework${i}`; // ينادي homework1, homework2...
             const section = document.createElement('section');
             section.className = 'video-card';
             section.innerHTML = `
-                <div class="hud-ui"></div>
-                <video loop playsinline muted src="https://res.cloudinary.com/${cloudName}/video/upload/q_auto,f_auto/${videoID}.mp4"></video>
-                <div class="absolute bottom-20 left-10 z-[100] pointer-events-none">
-                    <div class="text-cyan-400 text-[10px] tracking-[5px] mb-2 font-bold">NODE: ${videoID.toUpperCase()}</div>
-                    <h2 class="big-title">ARCHIVE<br>STREΔM</h2>
+                <div class="hud-frame"><div class="corner tl"></div><div class="corner br"></div></div>
+                <div class="video-wrapper">
+                    <video loop playsinline muted src="https://res.cloudinary.com/${cloudAccount}/video/upload/q_auto:best,f_auto/${vID}.mp4"></video>
+                </div>
+                <div class="overlay-cinematic"></div>
+                <div class="progress-line"></div>
+
+                <div class="side-dock">
+                    <div class="dock-btn"><i class="fas fa-fingerprint"></i><span>SECURE</span></div>
+                    <div class="dock-btn text-red-500"><i class="fas fa-heart"></i><span>${(Math.random()*90 + 10).toFixed(1)}K</span></div>
+                    <div class="dock-btn text-cyan-400"><i class="fas fa-bolt"></i><span>BURST</span></div>
+                    <div class="dock-btn"><i class="fas fa-share-nodes"></i><span>SEND</span></div>
+                </div>
+
+                <div class="video-content">
+                    <div class="node-tag">NODE_DATA_BLOCK_${i}</div>
+                    <h2 class="main-title">GLOBAL<br>STREAM_${i}</h2>
+                    <p class="text-white/30 text-[10px] mt-8 tracking-[10px] uppercase font-bold">Bitrate: Adaptive // Source: ${cloudAccount}</p>
                 </div>
             `;
             engine.appendChild(section);
         }
 
-        // إخفاء التحميل فوراً لأننا لا ننتظر قائمة الـ JSON
+        // بدء التشغيل وإخفاء اللودر
         window.addEventListener('load', () => {
             setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
-            }, 1000);
+                document.getElementById('loading-overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 1000);
+            }, 2000);
+            initEmpire();
         });
 
-        // محرك التشغيل عند التمرير
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                const v = e.target.querySelector('video');
-                if (e.isIntersecting) v.play();
-                else { v.pause(); v.currentTime = 0; }
-            });
-        }, { threshold: 0.6 });
+        function initEmpire() {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    const vid = e.target.querySelector('video');
+                    const bar = e.target.querySelector('.progress-line');
+                    if (e.isIntersecting) {
+                        vid.play();
+                        vid.ontimeupdate = () => { if(vid.duration) bar.style.width = (vid.currentTime / vid.duration) * 100 + '%'; };
+                    } else {
+                        vid.pause(); vid.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.65 });
 
-        document.querySelectorAll('.video-card').forEach(c => observer.observe(c));
+            document.querySelectorAll('.video-card').forEach(card => obs.observe(card));
+        }
 
-        // تفعيل الصوت
-        window.onclick = () => { document.querySelectorAll('video').forEach(v => v.muted = false); };
+        // الساعة الرقمية
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('digital-clock').innerText = 
+                now.getHours().toString().padStart(2, '0') + ":" + 
+                now.getMinutes().toString().padStart(2, '0') + ":" + 
+                now.getSeconds().toString().padStart(2, '0') + " // SYSTEM_READY";
+        }, 1000);
+
+        // تفعيل الصوت بلمسة واحدة
+        window.addEventListener('click', () => {
+            document.querySelectorAll('video').forEach(v => v.muted = false);
+        }, { once: true });
     </script>
-
-    <style>@keyframes loading { 0% { left: -100%; width: 30%; } 100% { left: 100%; width: 30%; } }</style>
 </body>
 </html>
