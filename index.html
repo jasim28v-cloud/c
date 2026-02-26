@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SHADOW OS | THE ULTIMATE EMPIRE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --glass: rgba(0, 0, 0, 0.7);
+        }
+
+        body, html { 
+            margin: 0; padding: 0; background: #000; color: #fff; 
+            overflow: hidden; font-family: 'Rajdhani', sans-serif;
+            height: 100%; width: 100%;
+        }
+
+        /* حاوية التمرير العملاقة */
+        .app-container { 
+            height: 100vh; width: 100vw;
+            overflow-y: scroll; scroll-snap-type: y mandatory; 
+            scrollbar-width: none; -ms-overflow-style: none;
+            scroll-behavior: smooth;
+        }
+        .app-container::-webkit-scrollbar { display: none; }
+
+        .video-card { 
+            height: 100vh; width: 100vw; scroll-snap-align: start; 
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* خلفية الفيديو الفخمة */
+        .video-wrapper { position: absolute; inset: 0; z-index: 1; }
+        video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) contrast(1.2); }
+
+        /* تأثيرات الإضاءة HUD */
+        .overlay-fx {
+            position: absolute; inset: 0; z-index: 2;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+        }
+
+        .hud-frame {
+            position: absolute; inset: 25px; border: 1px solid rgba(0, 243, 255, 0.1);
+            pointer-events: none; z-index: 10; border-radius: 15px;
+        }
+        
+        .corner { position: absolute; width: 25px; height: 25px; border: 2px solid var(--neon-blue); opacity: 0.5; }
+        .top-left { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+        .top-right { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+        .bottom-left { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+        .bottom-right { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+        /* أزرار الأوامر الجانبية */
+        .action-dock {
+            position: absolute; right: 20px; bottom: 120px; z-index: 100;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .action-btn {
+            width: 55px; height: 55px; background: var(--glass);
+            backdrop-filter: blur(15px); border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 50%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+        .action-btn:hover { transform: scale(1.1); border-color: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+        .action-btn i { font-size: 1.2rem; }
+        .action-btn span { font-size: 8px; margin-top: 2px; font-weight: bold; color: var(--neon-blue); }
+
+        /* شريط المعلومات السفلي */
+        .info-panel {
+            position: absolute; bottom: 50px; left: 35px; z-index: 100;
+            max-width: 80%; pointer-events: none;
+        }
+
+        .node-tag {
+            background: rgba(0, 243, 255, 0.15); color: var(--neon-blue);
+            padding: 4px 12px; border-radius: 2px; font-size: 10px;
+            border: 1px solid var(--neon-blue); display: inline-block; 
+            margin-bottom: 15px; font-family: 'Orbitron';
+        }
+
+        .big-title {
+            font-family: 'Orbitron'; font-weight: 900; font-size: clamp(2.5rem, 10vw, 4.5rem);
+            line-height: 0.85; text-transform: uppercase; letter-spacing: -3px;
+            background: linear-gradient(to bottom, #fff, #00f3ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.3));
+        }
+
+        /* لودر البداية */
+        #init-loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        /* شريط التقدم السفلي */
+        .progress-line { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--neon-blue); width: 0%; z-index: 1000; box-shadow: 0 0 10px var(--neon-blue); }
+    </style>
+</head>
+<body>
+
+    <div id="init-loader">
+        <div class="mb-6 text-cyan-400 font-black tracking-[12px] animate-pulse text-xs" style="font-family: 'Orbitron';">CONNECTING_TO_EMPIRE_V4</div>
+        <div class="w-64 h-[1px] bg-white/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-cyan-400 animate-[loading_2s_infinite]"></div>
+        </div>
+    </div>
+
+    <header class="fixed top-0 w-full z-[1000] p-8 flex justify-between items-start pointer-events-none">
+        <div class="flex items-center gap-4">
+            <div class="h-12 w-[2px] bg-cyan-500 shadow-[0_0_15px_#00f3ff]"></div>
+            <div>
+                <div class="text-[9px] text-white/40 uppercase tracking-[5px]">Global Node Feed</div>
+                <div class="font-black text-2xl tracking-tighter" style="font-family: 'Orbitron';">SHΔDØW<span class="text-cyan-400">.EMPIRE</span></div>
+            </div>
+        </div>
+        <div class="text-right backdrop-blur-sm bg-black/20 p-2 rounded">
+            <div id="live-timer" class="text-cyan-400 font-bold text-sm" style="font-family: 'Orbitron';">00:00:00</div>
+            <div class="text-[8px] text-white/30 uppercase tracking-widest mt-1">Status: Operational</div>
+        </div>
+    </header>
+
+    <main class="app-container" id="empire-engine">
+        </main>
+
+    <script>
+        // --- إعدادات الإمبراطورية ---
+        // ضع الرابط الجديد هنا كل أسبوع
+        const sharedLink = "https://collection.cloudinary.com/dssk5tabb/3f7d9a2f9265b9a008994ca0b5efb125";
+        const cloudID = sharedLink.split('/')[3]; 
+        const targetTag = "homework"; // الوسم الذي تضعه للفيديوهات في Cloudinary
+
+        const engine = document.getElementById('empire-engine');
+
+        // جلب الفيديوهات تلقائياً بناءً على الوسم (Tag)
+        fetch(`https://res.cloudinary.com/${cloudID}/video/list/${targetTag}.json`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.resources.length === 0) {
+                engine.innerHTML = `<div class="h-screen flex items-center justify-center text-cyan-400">لم يتم العثور على فيديوهات بوسم 'homework'</div>`;
+                return;
+            }
+
+            data.resources.forEach((file, index) => {
+                const videoUrl = `https://res.cloudinary.com/${cloudID}/video/upload/q_auto:best,f_auto/${file.public_id}.${file.format}`;
+                const section = document.createElement('section');
+                section.className = 'video-card';
+                section.innerHTML = `
+                    <div class="hud-frame">
+                        <div class="corner top-left"></div><div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+                    </div>
+                    
+                    <div class="video-wrapper">
+                        <video loop playsinline muted src="${videoUrl}"></video>
+                    </div>
+                    <div class="overlay-fx"></div>
+                    <div class="progress-line"></div>
+
+                    <div class="action-dock">
+                        <div class="action-btn text-white"><i class="fas fa-fingerprint"></i><span>SECURE</span></div>
+                        <div class="action-btn text-red-500"><i class="fas fa-heart"></i><span>${(Math.random()*50).toFixed(1)}K</span></div>
+                        <div class="action-btn text-cyan-400"><i class="fas fa-share-nodes"></i><span>LINK</span></div>
+                    </div>
+
+                    <div class="info-panel">
+                        <div class="node-tag">NODE_SEC_0${index + 1}</div>
+                        <h2 class="big-title">ARCHIVE<br>VISUAL_${index + 1}</h2>
+                        <p class="text-white/30 text-[9px] mt-4 tracking-[4px] uppercase font-bold">Protocol: Encrypted // Source: ${cloudID}</p>
+                    </div>
+                `;
+                engine.appendChild(section);
+            });
+            startEngine();
+        })
+        .catch(err => {
+            console.error("خطأ في الاتصال:", err);
+            engine.innerHTML = `<div class="h-screen flex items-center justify-center text-red-500">تأكد من إعداد الـ Cloud Name والـ Tag بشكل صحيح</div>`;
+        });
+
+        function startEngine() {
+            // إخفاء اللودر
+            setTimeout(() => {
+                document.getElementById('init-loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('init-loader').style.display = 'none', 1000);
+            }, 1500);
+
+            // مراقب التشغيل السلس
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const vid = entry.target.querySelector('video');
+                    const line = entry.target.querySelector('.progress-line');
+                    if (entry.isIntersecting) {
+                        vid.play();
+                        vid.ontimeupdate = () => { if(vid.duration) line.style.width = (vid.currentTime / vid.duration) * 100 + '%'; };
+                    } else {
+                        vid.pause(); vid.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.6 });
+
+            document.querySelectorAll('.video-card').forEach(card => observer.observe(card));
+        }
+
+        // الساعة الحية
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('live-timer').innerText = d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0');
+        }, 1000);
+
+        // تفعيل الصوت
+        window.addEventListener('click', () => {
+            document.querySelectorAll('video').forEach(v => v.muted = false);
+        }, { once: true });
+    </script>
+
+    <style>
+        @keyframes loading { 0% { left: -100%; width: 20%; } 50% { width: 50%; } 100% { left: 100%; width: 20%; } }
+    </style>
+</body>
+</html>
